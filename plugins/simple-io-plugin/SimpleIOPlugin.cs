@@ -197,6 +197,41 @@ namespace overwolf.plugins.simpleio {
         callback(false, string.Format("error: ", ex.ToString()));
       }
     }
+    
+    public void writeLocalAppDataImageFile(string path, string content, Action<object, object> callback) {
+      if (callback == null)
+        return;
+
+      try {
+        Task.Run(() => {
+          string filePath = "";
+          try {
+            path = path.Replace('/', '\\');
+            if (path.StartsWith("\\")) {
+              path = path.Remove(0, 1);
+            }
+            filePath = Path.Combine(LOCALAPPDATA, path);
+
+            // make sure the folder exists, prior to writing the file
+            FileInfo fileInfo = new FileInfo(filePath);
+            if (!fileInfo.Directory.Exists) {
+              fileInfo.Directory.Create();
+            }
+
+            using (FileStream filestream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Write)) {
+              byte[] info = Convert.FromBase64String(content);
+              filestream.Write(info, 0, info.Length);
+            }
+            callback(true, "");
+          } catch (Exception ex) {
+            callback(false, string.Format("unexpected error when trying to write to '{0}' : {1}",
+              filePath, ex.ToString()));
+          }
+        });
+      } catch (Exception ex) {
+        callback(false, string.Format("error: ", ex.ToString()));
+      }
+    }
 
     public void getLatestFileInDirectory(string path, Action<object, object> callback) {
       if (callback == null)

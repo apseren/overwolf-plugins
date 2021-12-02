@@ -175,6 +175,20 @@ plugin.get().writeLocalAppDataFile( filename, content, function(status, message)
     console.log(arguments);
   });
 ```
+- writeLocalAppDataImageFile - Create an image file on the local filesystem with given base64 content.
+If a canvas.toDataURL is used to generate the base64 string, do not include the "data:image/png;base64," part.
+For security reasons, we only allow to write to the local-app-data folder.
+This function will either create a new file or overwrite the previous one (based on implementation).
+
+```
+var filename = "/folder/file.png";
+var canvas = document.createElement("canvas");
+var content = canvas.toDataURL("image/png").split(",")[1];
+plugin.get().writeLocalAppDataImageFile( filename, content, function(status, message)
+  {
+    console.log(arguments);
+  });
+```
 
 - listDirectory - return a directory's content (files and folders).
 
